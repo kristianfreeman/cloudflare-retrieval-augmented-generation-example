@@ -1,0 +1,16 @@
+name = "ai-example"
+main = "src/index.js"
+compatibility_date = "2023-09-18"
+
+[[d1_databases]]
+binding = "DATABASE"
+database_name = "ai-example"
+database_id = "2a210384-148b-4c31-bbad-c2873f649f9c"
+
+[[unsafe.bindings]]
+name = "VECTOR_INDEX"
+type = "vectorize"
+index_name = "tutorial-index-768"
+
+[ai]
+binding = "AI"
