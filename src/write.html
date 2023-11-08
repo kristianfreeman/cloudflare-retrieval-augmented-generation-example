@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Write | Cloudflare RAG Example</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+  <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
+  <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+</head>
+
+<body>
+  <h1>Write a new note</h1>
+  <h2>Retrieval Augmented Generation (RAG) Example</h2>
+
+  <form hx-post="/notes" hx-trigger="submit" hx-ext='json-enc'>
+    <textarea name="text" required="true" placeholder="Write a new note to add to the AI's knowledge base"></textarea>
+    <button type="submit">Submit</button>
+  </form>
+
+  <div>
+    <small>
+      <a href="/ui">Go back to the query UI</a>
+    </small>
+  </div>
+</body>
+
+</html>
