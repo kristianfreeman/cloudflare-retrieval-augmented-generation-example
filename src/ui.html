@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Chat | Cloudflare RAG Example</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+  <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
+</head>
+
+<body>
+  <h1>Retrieval Augmented Generation (RAG) Example</h1>
+  <h2>Powered by Cloudflare AI</h2>
+
+  <form hx-get="/" hx-trigger="submit" hx-target="#result">
+    <textarea name="text" required="true" placeholder="Ask the AI anything"></textarea>
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="result"></p>
+
+  <div>
+    <small>
+      <a href="/write">+ Add a new note</a>
+    </small>
+  </div>
+</body>
+
+</html>

@@ -1,5 +1,9 @@
 import { Ai } from "@cloudflare/ai";
 import { Hono } from 'hono'
+
+import ui from './ui.html'
+import write from './write.html'
+
 const app = new Hono()
 
 app.post('/notes', async (c) => {
@@ -30,6 +34,14 @@ app.post('/notes', async (c) => {
   ]);
 
   return c.json({ id, text, inserted });
+})
+
+app.get('/ui', async (c) => {
+	return c.html(ui);
+})
+
+app.get('/write', async (c) => {
+	return c.html(write);
 })
 
 app.get('/', async (c) => {
