@@ -74,7 +74,7 @@ app.get('/', async (c) => {
   const { response: answer } = await ai.run(
     '@cf/meta/llama-2-7b-chat-int8',
     {
-      inputs: [
+      messages: [
         ...(notes.length ? [{ role: 'system', content: contextMessage }] : []),
         { role: 'system', content: systemPrompt },
         { role: 'user', content: question }
