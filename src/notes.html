@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Chat | Cloudflare RAG Example</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+	<script src="https://unpkg.com/mustache@latest"></script>
+  <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
+	<script src="https://unpkg.com/htmx.org/dist/ext/client-side-templates.js"></script>
+</head>
+
+<body>
+  <h1>Notes</h1>
+
+	<p>
+    <small>
+			<a href="/ui">Query</a> ・ <a href="/notes">Notes</a> ・ <a href="/write">Add note</a>
+    </small>
+	</p>
+
+	<div
+		hx-ext='client-side-templates'
+		hx-get="/notes.json"
+		hx-trigger="load"
+		hx-swap="innerHTML"
+		hx-target="#notes"
+		mustache-array-template="note"
+	>
+		<template id="note">
+			{{#data}}
+			  <div class="note">
+					<h2>Note #{{id}}</h2>
+			  	<p>{{text}}</p>
+					<form method="POST" action="/notes/{{id}}">
+						<input type="hidden" name="_method" value="DELETE">
+						<button type="submit">Delete</button>
+					</form>
+			  </div>
+			{{/data}}
+		</template>
+
+		<div id="notes"></div>
+	</div>
+</body>
+
+</html>

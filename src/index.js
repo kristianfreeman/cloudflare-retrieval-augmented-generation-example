@@ -1,14 +1,34 @@
-import { Ai } from "@cloudflare/ai";
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { methodOverride } from 'hono/method-override'
 
+import notes from './notes.html'
 import ui from './ui.html'
 import write from './write.html'
 
 const app = new Hono()
+app.use(cors())
+
+app.get('/notes.json', async (c) => {
+  const query = `SELECT * FROM notes`
+  const { results } = await c.env.DATABASE.prepare(query).all()
+  return c.json(results);
+})
+
+app.get('/notes', async (c) => {
+	return c.html(notes);
+})
+
+app.use('/notes/:id', methodOverride({ app }))
+app.delete('/notes/:id', async (c) => {
+  const { id } = c.req.param();
+  const query = `DELETE FROM notes WHERE id = ?`
+  await c.env.DATABASE.prepare(query).bind(id).run()
+	await c.env.VECTOR_INDEX.deleteByIds([id])
+	return c.redirect('/notes')
+})
 
 app.post('/notes', async (c) => {
-  const ai = new Ai(c.env.AI)
-
   const { text } = await c.req.json();
   if (!text) c.throw(400, "Missing text");
 
@@ -20,7 +40,7 @@ app.post('/notes', async (c) => {
 
   if (!record) c.throw(500, "Failed to create note")
 
-  const { data } = await ai.run('@cf/baai/bge-base-en-v1.5', { text: [text] })
+  const { data } = await c.env.AI.run('@cf/baai/bge-base-en-v1.5', { text: [text] })
   const values = data[0]
 
   if (!values) c.throw(500, "Failed to generate vector embedding")
@@ -45,23 +65,18 @@ app.get('/write', async (c) => {
 })
 
 app.get('/', async (c) => {
-  const ai = new Ai(c.env.AI);
-
   const question = c.req.query('text') || "What is the square root of 9?"
 
-  const embeddings = await ai.run('@cf/baai/bge-base-en-v1.5', { text: question })
+  const embeddings = await c.env.AI.run('@cf/baai/bge-base-en-v1.5', { text: question })
   const vectors = embeddings.data[0]
 
-  const SIMILARITY_CUTOFF = 0.75
   const vectorQuery = await c.env.VECTOR_INDEX.query(vectors, { topK: 1 });
-  const vecIds = vectorQuery.matches
-    .filter(vec => vec.score > SIMILARITY_CUTOFF)
-    .map(vec => vec.vectorId)
+  const vecId = vectorQuery.matches[0]?.vectorId
 
   let notes = []
-  if (vecIds.length) {
-    const query = `SELECT * FROM notes WHERE id IN (${vecIds.join(", ")})`
-    const { results } = await c.env.DATABASE.prepare(query).bind().all()
+  if (vecId) {
+    const query = `SELECT * FROM notes WHERE id = ?`
+    const { results } = await c.env.DATABASE.prepare(query).bind(vecId).all()
     if (results) notes = results.map(vec => vec.text)
   }
 
@@ -71,7 +86,7 @@ app.get('/', async (c) => {
 
   const systemPrompt = `When answering the question or responding, use the context provided, if it is provided and relevant.`
 
-  const { response: answer } = await ai.run(
+  const { response: answer } = await c.env.AI.run(
     '@cf/meta/llama-2-7b-chat-int8',
     {
       messages: [
