@@ -5,23 +5,41 @@
   <meta charset="UTF-8">
   <title>Write | Cloudflare RAG Example</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
-  <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
-  <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
 </head>
 
 <body>
   <h1>Write a new note</h1>
 
-	<p>
+  <p>
     <small>
-			<a href="/ui">Query</a> ・ <a href="/notes">Notes</a> ・ <a href="/write">Add note</a>
+      <a href="/ui">Query</a> ・ <a href="/notes">Notes</a> ・ <a href="/write">Add note</a>
     </small>
-	</p>
+  </p>
 
-  <form hx-post="/notes" hx-trigger="submit" hx-ext='json-enc'>
+  <form>
     <textarea name="text" required="true" placeholder="Write a new note to add to the AI's knowledge base"></textarea>
     <button type="submit">Submit</button>
   </form>
+
+  <script>
+    const form = document.querySelector('form')
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const text = form.querySelector('textarea').value
+      const response = await fetch('/notes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text })
+      })
+      if (response.ok) {
+        window.location.href = '/ui'
+      } else {
+        alert('Failed to create note')
+      }
+    })
+  </script>
 </body>
 
 </html>
