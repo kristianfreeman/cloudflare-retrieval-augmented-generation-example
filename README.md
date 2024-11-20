@@ -1,6 +1,6 @@
 # cloudflare-retrieval-augmented-generation-example
 
-This repo shows how to build a Retrieval Augmented Generation (RAG) application using Cloudflare Workers AI. It uses Cloudflare Workflows, D1, and Vectorize to store notes that can be used to generate context for the RAG model.
+This repo shows how to build a Retrieval Augmented Generation (RAG) application using Cloudflare Workers AI. It uses Cloudflare Workflows, D1, and Vectorize to store notes that can be used to generate context for the RAG model. You can then use Cloudflare AI's Llama-based models, or Anthropic Claude to generate resopnses.
 
 ## Installation/Setup
 
@@ -58,6 +58,14 @@ After deploying, you can use the following routes:
 - `/write` is a form UI that allows you to add a note to the AI's knowledge base.
 - `/notes` is a list of all the notes in the AI's knowledge base.
 - `/notes.json` is a JSON endpoint that returns all the notes in the AI's knowledge base.
+
+If you would like to use Anthropic Claude instead of Workers AI, set the secret `ANTHROPIC_API_KEY` in your Workers application:
+
+```bash
+$ wrangler secret put ANTHROPIC_API_KEY your-api-key
+```
+
+Once you've set this secret, all text generation will be done by Claude.
 
 ## Tutorial
 
