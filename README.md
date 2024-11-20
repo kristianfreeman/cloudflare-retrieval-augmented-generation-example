@@ -1,6 +1,8 @@
 # cloudflare-retrieval-augmented-generation-example
 
-This repo shows how to build a Retrieval Augmented Generation (RAG) application using Cloudflare Workers AI. It uses Cloudflare Workflows, D1, and Vectorize to store notes that can be used to generate context for the RAG model. You can then use Cloudflare AI's Llama-based models, or Anthropic Claude to generate resopnses.
+This repo shows how to build a Retrieval Augmented Generation (RAG) application using Cloudflare Workers AI. It uses Cloudflare Workflows, D1, and Vectorize to store notes that can be used to generate context for the RAG model. You can then use Cloudflare AI's Llama-based models, or Anthropic Claude to generate responses.
+
+This project was created as part of a tutorial on [Building a Retrieval Augmented Generation (RAG) Application with Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/tutorials/build-a-retrieval-augmented-generation-ai/). If you want a guided walkthrough of the steps in this repo, check out the tutorial.
 
 ## Installation/Setup
 
@@ -59,6 +61,8 @@ After deploying, you can use the following routes:
 - `/notes` is a list of all the notes in the AI's knowledge base.
 - `/notes.json` is a JSON endpoint that returns all the notes in the AI's knowledge base.
 
+### Changing the model
+
 If you would like to use Anthropic Claude instead of Workers AI, set the secret `ANTHROPIC_API_KEY` in your Workers application:
 
 ```bash
@@ -67,7 +71,11 @@ $ wrangler secret put ANTHROPIC_API_KEY your-api-key
 
 Once you've set this secret, all text generation will be done by Claude.
 
-## Tutorial
+### Recursive text splitting
 
-This project was created as part of a tutorial on [Building a Retrieval Augmented Generation (RAG) Application with Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/tutorials/build-a-retrieval-augmented-generation-ai/).
+By default, this app uses Langchain's `RecursiveCharacterTextSplitter` to split text into chunks. This is a recommended approach for taking large pieces of text and formatting them for RAG use-cases. You can turn this off by setting the `ENABLE_TEXT_SPLITTER` variable in `wrangler.toml` to `false`:
 
+```toml
+[vars]
+ENABLE_TEXT_SPLITTER = "false"
+```
